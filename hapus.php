@@ -1,59 +1,66 @@
+<?php
+session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+
+include 'koneksi.php';
+
+$deleted = false;
+
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = intval($_GET['id']); // Validasi angka
+
+    // Gunakan prepared statement
+    $stmt = mysqli_prepare($conn, "DELETE FROM tbl_pasien WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    
+    $deleted = true;
+}
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Hapus Data</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background-color: #f4eae6;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
 
-<?php
-if (isset($_GET['npm'])) {
-    include "koneksi.php";
-    $npm = $_GET['npm'];
-
-    $hapus = mysqli_query($conn, "DELETE FROM tbl_mahasiswa WHERE npm='$npm'");
-
-    if ($hapus) {
-        echo "<script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Data berhasil dihapus',
-                background: '#fff3e6', /* Soft light brown background */
-                confirmButtonColor: '#9f7e6e', /* Soft brown color for button */
-                iconColor: '#9f7e6e' /* Soft brown color for icon */
-            }).then(() => {
-                window.location.href = 'index.php';
-            });
-        </script>";
-    } else {
-        echo "<script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: 'Data gagal dihapus',
-                background: '#f8d7da', /* Soft red background */
-                confirmButtonColor: '#d33', /* Red for error */
-                iconColor: '#d33' /* Red for error icon */
-            }).then(() => {
-                window.location.href = 'index.php';
-            });
-        </script>";
-    }
-} else {
-    echo "<script>
-        Swal.fire({
-            icon: 'warning',
-            title: 'NPM tidak ditemukan',
-            background: '#fff3e6', /* Soft light brown background */
-            confirmButtonColor: '#b8860b', /* Soft yellowish brown for warning button */
-            iconColor: '#b8860b' /* Soft yellowish brown for warning icon */
-        }).then(() => {
-            window.location.href = 'index.php';
-        });
-    </script>";
-}
-?>
+<?php if ($deleted): ?>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Data berhasil dihapus!',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        window.location.href = 'pasien.php';
+    });
+</script>
+<?php else: ?>
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Data gagal dihapus!',
+        text: 'ID tidak valid atau kesalahan server.',
+        confirmButtonColor: '#734b2f'
+    }).then(() => {
+        window.location.href = 'pasien.php';
+    });
+</script>
+<?php endif; ?>
 
 </body>
 </html>

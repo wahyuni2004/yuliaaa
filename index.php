@@ -1,140 +1,100 @@
+<?php
+session_start();
+require 'koneksi.php';
+
+$isLoggedIn = isset($_SESSION['username']);
+$totalPasien = 0;
+
+if ($isLoggedIn) {
+    $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM tbl_pasien");
+    $data = mysqli_fetch_assoc($result);
+    $totalPasien = $data['total'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Daftar Mahasiswa</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #e0d2c6; /* Soft brown background */
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      width: 90%;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(80, 50, 20, 0.2);
-    }
-    h2 {
-      text-align: center;
-      color: #3c2f29; /* Darker brown color */
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-    .table-container {
-      margin-top: 30px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      font-size: 14px;
-    }
-    th {
-      background-color: #9f7e6e; /* Modern light brown */
-      color: white;
-    }
-    td {
-      background-color: #f5f3e6; /* Soft beige background for cells */
-    }
-    .action-buttons a {
-      padding: 6px 12px;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      margin: 0 5px;
-      transition: background-color 0.3s ease;
-    }
-    .edit-btn {
-      background-color: #8c5e3c; /* Modern medium brown */
-    }
-    .edit-btn:hover {
-      background-color: #734b2f;
-    }
-    .delete-btn {
-      background-color: #d33;
-    }
-    .delete-btn:hover {
-      background-color: #a02b1f;
-    }
-    .add-btn {
-      background-color: #9f7e6e; /* Matching color for add button */
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      margin-top: 20px;
-      display: block;
-      width: 200px;
-      text-align: center;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
-    .add-btn:hover {
-      background-color: #734b2f;
-    }
-    .action-buttons {
-      display: flex;
-      justify-content: center;
-    }
-    .action-buttons a + a {
-      margin-left: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Selamat Datang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4eae6;
+            font-family: Arial, sans-serif;
+        }
+
+        .hero {
+            background-color: #734b2f;
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-custom {
+            background-color: #9f7e6e;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #5a3824;
+        }
+
+        .content {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer {
+            text-align: center;
+            color: #734b2f;
+            padding: 20px 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="hero">
+        <h1>Selamat Datang di Aplikasi Data Pasien</h1>
+        <p class="lead">Kelola data pasien dengan mudah dan cepat.</p>
+        <?php if ($isLoggedIn): ?>
+            <a href="dashboard.php" class="btn btn-light">Masuk ke Dashboard</a>
+        <?php else: ?>
+            <a href="login.php" class="btn btn-custom me-2">Login</a>
+            <a href="register.php" class="btn btn-outline-light">Daftar</a>
+        <?php endif; ?>
+    </div>
 
-<div class="container">
-  <h2>Daftar Mahasiswa</h2>
+    <div class="container content">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4 text-center">
+                    <?php if ($isLoggedIn): ?>
+                        <h4>Total Pasien Terdaftar:</h4>
+                        <h2><?= $totalPasien ?></h2>
+                    <?php else: ?>
+                        <h4>Silakan login untuk melihat data pasien.</h4>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <a href="tambah.php" class="add-btn">Tambah Data Mahasiswa</a>
+    <div class="footer">
+        <p>&copy; <?= date('Y') ?> Website Data Pasien. Dibuat dengan &hearts;.</p>
+    </div>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>NPM</th>
-          <th>Nama</th>
-          <th>Program Studi</th>
-          <th>Email</th>
-          <th>Alamat</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        include "koneksi.php";
-        $query = mysqli_query($conn, "SELECT * FROM tbl_mahasiswa");
-        while ($row = mysqli_fetch_assoc($query)) {
-          echo "<tr>
-                  <td>{$row['npm']}</td>
-                  <td>{$row['nama']}</td>
-                  <td>{$row['prodi']}</td>
-                  <td>{$row['email']}</td>
-                  <td>{$row['alamat']}</td>
-                  <td class='action-buttons'>
-                    <a href='edit.php?npm={$row['npm']}' class='edit-btn'>Edit</a>
-                    <a href='hapus.php?npm={$row['npm']}' class='delete-btn' onclick='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\")'>Hapus</a>
-                  </td>
-                </tr>";
-        }
-        ?>
-      </tbody>
-    </table>
-  </div>
-</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
